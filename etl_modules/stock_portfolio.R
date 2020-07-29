@@ -49,7 +49,8 @@ get_monthly_return <- function(
       mutate_fun = monthlyReturn
     ) %>% 
     ungroup() %>%
-    mutate(date = rollback(dates = date, roll_to_first = TRUE))
+    mutate(date = rollback(dates = date, roll_to_first = TRUE)) %>% 
+    rename(monthly_returns = monthly.returns)
   
   returns <- returns %>% 
     group_by(symbol) %>% 
@@ -79,12 +80,12 @@ build_portfolio <- function(
   portfolio <- returns %>% 
     tq_portfolio(
       assets_col = symbol,
-      returns_col = monthly.returns,
+      returns_col = monthly_returns,
       weights = weights,
       rebalance_on = 'years'
     ) %>% 
-    add_column(symbol = 'Portfolio', .before = 1) %>% 
-    rename(portfolio_returns = portfolio.returns)
+  add_column(symbol = 'PORTFOLIO', .before = 1) %>% 
+  rename(monthly_returns = portfolio.returns)
   
   #last_date <- max(portfolio$date)
   
