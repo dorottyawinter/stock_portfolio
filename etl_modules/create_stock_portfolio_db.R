@@ -13,7 +13,7 @@ custom_portfolio <- function(
   ){
   #' Build custom portfolio and save to SQLite DB.
   #'
-  #' @description Get stock prices for all the given stock symbols from start_date to end date. Calculates monthly returns. Aggregates a group of monthly returns by stocks - optionally weighted by the weights parameter - into portfolio returns. Saves raw stock prices, monthly returns, and portfolio returns to SQLite DB.
+  #' @description Get stock prices for all the given stock symbols from start_date to end date. Calculates monthly returns. Aggregates a group of monthly returns by stocks - optionally weighted by the weights parameter - into portfolio returns. Saves given stocks with weights, raw stock prices, monthly returns, and portfolio returns to SQLite DB.
   #' @param stock_symbols (chr vector) Character vector representing a single (or multiple) stock symbol.
   #' @param stock_weights (num vector) Optional parameter for the stock weights, which can be passed as a two column tibble with asset names in first column and weights in second column. Default: NULL.
   #' @param db_path (chr) Character string representing the path to the SQLite DB file, or store it in-memory. Default: ':memory:'.
@@ -24,7 +24,7 @@ custom_portfolio <- function(
   
   # stock symbols and weights
   
-  weights <- tibble(stock_symbols, stock_weights)
+  weights <- tibble(symbol = stock_symbols, weight = stock_weights)
   
   # get raw stock prices
   
@@ -58,6 +58,15 @@ custom_portfolio <- function(
     con <- dbConnect(drv = SQLite(), db_path)
     
   }
+  
+  dbWriteTable(
+    conn = con, 
+    name = 'weights', 
+    value = weights, 
+    savemode = 'u', 
+    overwrite = TRUE,
+    field.types = c(symbol = 'TEXT', weight = 'DOUBLE')
+  )
   
   dbWriteTable(
     conn = con, 

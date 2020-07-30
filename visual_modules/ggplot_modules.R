@@ -10,6 +10,56 @@ source('~/git/stock_portfolio/visual_modules/custom_palette.R')
 font_family = 'Leelawadee UI Semilight'
 
 
+vis_pie <- function(df, category_col, value_col, params_list){
+  
+  category_col = enquo(category_col)
+  value_col = enquo(value_col)
+  
+  vis_palette <- get_color_palette(df = df, color_col = category_col)
+  
+  vis <- ggplot(
+    data = df,
+    mapping = aes(
+      x = '',
+      y = !! value_col,
+      fill = !! category_col
+    )
+  ) +
+    geom_bar(
+      stat = 'identity',
+      width = 1,
+      alpha = 0.7
+    ) +
+    coord_polar(
+      theta = 'y', 
+      start = 0
+      ) +
+    geom_text(
+      label = scales::percent(df %>% pull(!! value_col)), 
+      position = position_stack(vjust = 0.5),
+      size = 4,
+      family = font_family
+      ) +
+    scale_fill_manual(values = vis_palette) +
+    labs(
+      title = params_list[['labs']][['title']]
+    ) +
+    theme_void() +
+    theme(
+      axis.line = element_blank(),
+      axis.text.x = element_blank(),
+      axis.text.y = element_blank(),
+      axis.title.x = element_blank(),
+      axis.title.y = element_blank(),
+      plot.title = element_text(size = 13, family = font_family, hjust = 0.5),
+      legend.title = element_blank()
+    )
+  
+  return(vis)
+  
+}
+
+
 vis_hist <- function(df, x_col, category_col, params_list){
   
   x_col = enquo(x_col)
@@ -52,7 +102,7 @@ vis_hist <- function(df, x_col, category_col, params_list){
       axis.text.y = element_text(size = 7, family = font_family),
       axis.title.x = element_text(size = 9, family = font_family),
       axis.title.y = element_text(size = 9, family = font_family),
-      plot.title = element_text(size = 13, family = font_family),
+      plot.title = element_text(size = 13, family = font_family, hjust = 0.5),
       strip.background.x = element_rect(fill = 'gray90'),
       strip.text.x = element_text(size = 9, family = font_family, color = 'black'),
       legend.title = element_blank()
@@ -100,7 +150,7 @@ vis_timeseries <- function(df, x_col, y_col, category_col, params_list){
         axis.text.y = element_text(size = 7, family = font_family),
         axis.title.x = element_text(size = 9, family = font_family),
         axis.title.y = element_text(size = 9, family = font_family),
-        plot.title = element_text(size = 13, family = font_family),
+        plot.title = element_text(size = 13, family = font_family, hjust = 0.5),
         strip.background.x = element_rect(fill = 'gray90'),
         strip.text.x = element_text(size = 9, family = font_family, color = 'black'),
         legend.key = element_rect(fill = 'white'),
@@ -168,7 +218,7 @@ vis_sharperatio <- function(df, value_col, category_col, params_list){
       axis.text.y = element_text(size = 7, family = font_family),
       axis.title.x = element_text(size = 9, family = font_family),
       axis.title.y = element_text(size = 9, family = font_family),
-      plot.title = element_text(size = 13, family = font_family),
+      plot.title = element_text(size = 13, family = font_family, hjust = 0.5),
       legend.title = element_blank()
     )
     

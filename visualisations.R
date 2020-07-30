@@ -2,6 +2,20 @@ library(tidyverse)
 
 source('~/git/stock_portfolio/visual_modules/ggplot_modules.R')
 
+# pie chart of portfolio allocation
+
+portfolio_pie_params <- list(
+  labs = list(
+    title = 'Pie chart of portfolio allocation'
+  )
+)
+
+vis_pie(
+  df = weights_df,
+  category_col = symbol,
+  value_col = weight,
+  params_list = portfolio_pie_params
+)
 
 # histogram of monthly returns
 

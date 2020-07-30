@@ -19,6 +19,7 @@ con <- custom_portfolio(
   stock_weights = STOCK_WEIGHTS
 )
 
+weights_df <- dbReadTable(conn = con, name = 'weights')
 raw_df <- dbReadTable(conn = con, name = 'raw_data') %>%
   mutate(date = as.Date(date))
 returns_df <- dbReadTable(conn = con, name = 'returns') %>%
