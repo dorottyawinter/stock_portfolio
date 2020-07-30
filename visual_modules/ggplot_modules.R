@@ -145,6 +145,7 @@ vis_sharperatio <- function(df, value_col, category_col, params_list){
       colour = 'gray80'
       ) +
     coord_flip() +
+    scale_x_discrete(limits = rev(levels(as.factor(df_sharperatio %>% pull(!! category_col))))) +
     #geom_label(nudge_y = -0.05) +
     scale_fill_manual(values = vis_palette) +
     scale_colour_manual(values = vis_palette) +
