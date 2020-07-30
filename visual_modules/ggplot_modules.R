@@ -4,6 +4,8 @@ library(tidyverse)
 
 loadfonts(device = "win")
 
+source('~/git/stock_portfolio/visual_modules/custom_palette.R')
+
 
 font_family = 'Leelawadee UI Semilight'
 
@@ -13,7 +15,7 @@ vis_hist <- function(df, x_col, category_col, params_list){
   x_col = enquo(x_col)
   category_col = enquo(category_col)
   
-  vis_palette = wes_palette(name = 'Darjeeling2', n = length(unique(df %>% pull(!! category_col))))
+  vis_palette <- get_color_palette(df = df, color_col = category_col)
   
   vis <- ggplot(
     data = df,
@@ -67,7 +69,7 @@ vis_timeseries <- function(df, x_col, y_col, category_col, params_list){
     y_col = enquo(y_col)
     category_col = enquo(category_col)
     
-    vis_palette = wes_palette(name = 'Darjeeling2', n = length(unique(df %>% pull(!! category_col))))
+    vis_palette <- get_color_palette(df = df, color_col = category_col)
     
     vis <- ggplot(
       data = df,
@@ -114,8 +116,6 @@ vis_sharperatio <- function(df, value_col, category_col, params_list){
   value_col = enquo(value_col)
   category_col = enquo(category_col)
   
-  vis_palette = wes_palette(name = 'Darjeeling2', n = length(unique(df %>% pull(!! category_col))))
-  
   df_sharperatio <- df %>% 
     group_by(!! category_col) %>% 
     tq_performance(
@@ -124,6 +124,14 @@ vis_sharperatio <- function(df, value_col, category_col, params_list){
       scale = 12,
       Rf = 0.03 / 12) %>% # risk free rate / 12 months
     ungroup()
+  
+  if(any(grepl(pattern = 'PORTFOLIO', x = df_sharperatio %>% pull(!! category_col)))){
+    category_col_levels <- c(rev(setdiff(levels(as.factor(df_sharperatio %>% pull(!! category_col))), 'PORTFOLIO')), 'PORTFOLIO')
+  }else{
+    category_col_levels <- rev(levels(as.factor(df_sharperatio %>% pull(!! category_col))))
+  }
+  
+  vis_palette <- get_color_palette(df = df, color_col = category_col)
   
   vis <- ggplot(
     data = df_sharperatio,
@@ -145,7 +153,7 @@ vis_sharperatio <- function(df, value_col, category_col, params_list){
       colour = 'gray80'
       ) +
     coord_flip() +
-    scale_x_discrete(limits = rev(levels(as.factor(df_sharperatio %>% pull(!! category_col))))) +
+    scale_x_discrete(limits = category_col_levels) +
     #geom_label(nudge_y = -0.05) +
     scale_fill_manual(values = vis_palette) +
     scale_colour_manual(values = vis_palette) +
